@@ -77,11 +77,154 @@ static void number2ast(unsigned int val)
 
 %%
 
-/* fill in the rules for your lexer here! */
+"var" {
+	tok2ast(VAR);
+	return VAR;
+}
 
-/* $Id: pl0_lexer_user_code.c,v 1.3 2023/10/06 11:12:37 leavens Exp leavens $ */
+"const" {
+	tok2ast(CONST);
+	return CONST;
+}
 
-%% 
+"procedure" {
+	tok2ast(PROCEDURE);
+	return PROCEDURE;
+}
+
+"call" {
+	tok2ast(CALL);
+	return CALL;
+}
+
+"begin" {
+	tok2ast(BEGIN);
+	return BEGIN;
+}
+
+"end" {
+	tok2ast(END);
+	return END;
+}
+
+"if" {
+	tok2ast(IF);
+	return IF;
+}
+
+"then" {
+	tok2ast(THEN);
+	return THEN;
+}
+
+"else" {
+	tok2ast(ELSE);
+	return ELSE;
+}
+
+"while" {
+	tok2ast(WHILE);
+	return WHILE;
+}
+
+"do" {
+	tok2ast(DO);
+	return DO;
+}
+
+":=" {
+	tok2ast(ASSIGNOP);
+	return ASSIGNOP;
+}
+
+";" {
+	tok2ast(SEMICOLON);
+	return SEMICOLON;
+}
+
+"," {
+	tok2ast(COMMA);
+	return COMMA;
+}
+
+"." {
+	tok2ast(PERIOD);
+	return PERIOD;
+}
+
+"<=" {
+	tok2ast(LEQOP);
+	return LEQOP;
+}
+
+"<>" {
+	tok2ast(NEQOP);
+	return NEQOP;
+}
+
+"<" {
+	tok2ast(LTOP);
+	return LTOP;
+}
+
+">=" {
+	tok2ast(GEQOP);
+	return GEQOP;
+}
+
+">" {
+	tok2ast(GTOP);
+	return GTOP;
+}
+
+"+" {
+	tok2ast(PLUSOP);
+	return PLUSOP;
+}
+
+"-" {
+	tok2ast(MINUSOP);
+	return MINUSOP;
+}
+
+"*" {
+	tok2ast(TIMESOP);
+	return TIMESOP;
+}
+
+"/" {
+	tok2ast(DIVOP);
+	return DIVOP;
+}
+
+
+[a-zA-Z_][a-zA-Z0-9_]* {
+	/* Identifiers */
+	ident2ast(yytext);
+	return IDENT;
+}
+
+[0-9]+ {
+	/* Numbers */
+	unsigned int val = atoi(yytext);
+	if (val > UINT_MAX) {
+		fprintf(stderr, "%s:%d: Number %s exceeds the maximum allowed value\n", filename, yylineno, yytext);
+		return ERROR;
+	}
+	number2ast(val);
+	return NUMBER;
+}
+
+
+[ \t\n\r] { /* Ignore whitespace */ }
+
+. { /* Unrecognized character */
+	fprintf(stderr, "%s:%d: Unrecognized character: %s\n", filename, yylineno, yytext);
+	errors_noted = true;
+}
+%%
+
+
 
 /* This code goes in the user code section of the pl0_lexer.l file,
    following the last %% above. */
