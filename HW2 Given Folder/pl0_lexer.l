@@ -74,7 +74,17 @@ static void number2ast(unsigned int val)
 %}
 
  /* you can add actual definitions below */
-
+IDENT		{LETTER}({LETTERORDIGIT}*)
+LETTER		[_a-zA-Z]
+NUMBER		{DIGIT}({DIGIT})
+DIGIT		[0-9]
+LETTERORDIGIT	({LETTER}|{DECDIGIT})
+IGNORED         [ \t\v\f\r]
+NEWLINE         \n
+CR              \r
+EOL             ({NEWLINE}|({CR}{NEWLINE}))
+COMMENTSTART    #
+COMMENT         {COMMENTSTART}.*
 
  /* the rules section starts after the %% below */
 
@@ -136,47 +146,47 @@ do {
 }
 
 := {
-	//tok2ast(becomessym);
+	tok2ast(becomessym);
 	return becomessym;
 }
 
 ; {
-	//tok2ast(semisym);
+	tok2ast(semisym);
 	return semisym;
 }
 
 , {
-	//tok2ast(commasym);
+	tok2ast(commasym);
 	return commasym;
 }
 
 . {
-	//tok2ast(periodsym);
+	tok2ast(periodsym);
 	return periodsym;
 }
 
 "<=" {
-	//tok2ast(leqsym);
+	tok2ast(leqsym);
 	return leqsym;
 }
 
 "<>" {
-	//tok2ast(neqsym);
+	tok2ast(neqsym);
 	return neqsym;
 }
 
-< {
-	//tok2ast(ltsym);
+'<' {
+	tok2ast(ltsym);
 	return ltsym;
 }
 
 ">=" {
-	//tok2ast(geqsym);
+	tok2ast(geqsym);
 	return geqsym;
 }
 
 > {
-	//tok2ast(gtsym);
+	tok2ast(gtsym);
 	return gtsym;
 }
 
@@ -200,31 +210,12 @@ do {
 	return divsym;
 }
 
-
-[a-zA-Z_][a-zA-Z0-9_]* {
-	/* Identifiers */
-	ident2ast(yytext);
-	return IDENT;
-}
-
-[0-9]+ {
-	/* Numbers */
-	unsigned int val = atoi(yytext);
-	if (val > UINT_MAX) {
-		fprintf(stderr, "%s:%d: Number %s exceeds the maximum allowed value\n", filename, yylineno, yytext);
-		return YYerror;
-	}
-	number2ast(val);
-	return NUMBER;
+= {
+	tok2ast(eqsym);
+	return eqsym;
 }
 
 
-[ \t\n\r] { /* Ignore whitespace */ }
-
-. { /* Unrecognized character */
-	fprintf(stderr, "%s:%d: Unrecognized character: %s\n", filename, yylineno, yytext);
-	errors_noted = true;
-}
 %%
 
 
