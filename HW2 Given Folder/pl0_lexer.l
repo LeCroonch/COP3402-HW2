@@ -338,5 +338,5 @@ void lexer_output()
 
 int main()
 {
-	
+	//lexer_output();
 }
