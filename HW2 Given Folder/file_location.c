@@ -14,6 +14,8 @@ file_location *file_location_make(const char *filename,
     if (ret == NULL) {
 	bail_with_error("Could not allocate space for a file_location!");
     }
+    ret->filename = filename;
+    ret->line = line;
     return ret;
 }
 
