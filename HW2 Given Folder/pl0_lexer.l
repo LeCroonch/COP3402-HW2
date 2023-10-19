@@ -43,6 +43,7 @@
 #define DIVOP 263
 #define IDENT 258
 #define NUMBER 259
+#define BEGIN 273
 
 /* need declaration of fileno, part of the C standard library.
    (Putting an extern declaration here shuts off a gcc warning.) */
@@ -234,7 +235,7 @@ static void number2ast(unsigned int val)
 	unsigned int val = atoi(yytext);
 	if (val > UINT_MAX) {
 		fprintf(stderr, "%s:%d: Number %s exceeds the maximum allowed value\n", filename, yylineno, yytext);
-		return ERROR;
+		return YYerror;
 	}
 	number2ast(val);
 	return NUMBER;
@@ -333,4 +334,9 @@ void lexer_output()
         }
         lexer_print_token(t, yylineno, yytext);
     } while (t != YYEOF);
+}
+
+int main()
+{
+	
 }
