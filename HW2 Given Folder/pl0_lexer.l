@@ -257,15 +257,11 @@ IGNORED         [ \t\v\f\r]
 	int ssf_ret;
 	unsigned long long int temp;
 	char msgbuf[512];
-	
 
 	sscanf(yytext, "%llu", &temp);
-	printf("%llu\n", temp);
 
-	
-	
 	if(temp > INT_MAX){
-		sprintf(msgbuf, "Number (%d) is too large!\n", *yytext);
+		sprintf(msgbuf, "Number (%s) is too large!\n", yytext);
 		yyerror(lexer_filename(), msgbuf);
 		ssf_ret = sscanf(yytext, "%d", &val);
 
