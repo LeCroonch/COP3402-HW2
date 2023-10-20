@@ -248,6 +248,9 @@ IGNORED         [ \t\v\f\r]
 	return rparensym;
 }
 
+
+{IDENT} 		{ ident2ast(yytext); return identsym; }
+
 {NUMBER} { 
 
 	int val;
@@ -263,7 +266,7 @@ IGNORED         [ \t\v\f\r]
 	return numbersym; 
 	
 }
-{IDENT} 		{ ident2ast(yytext); return identsym; }
+
 
 
 %%
@@ -349,12 +352,8 @@ void lexer_output()
 	t = yylex(&dummy);
 	if (t == YYEOF) {
 	    break;
-	}
-        if (t != dosym) { /*took from error message, was supposed to be t != eolsym but its not defined switch dosym back to eolsym to see it, this is the function from the asm_lexer.c file on leavens website*/
-	    lexer_print_token(t, yylineno, yytext);
-        } else {
-	    lexer_print_token(t, yylineno, "\\n");
-	}
+        }
+        lexer_print_token(t, yylineno, yytext);
     } while (t != YYEOF);
 }
 
