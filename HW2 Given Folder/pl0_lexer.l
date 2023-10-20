@@ -255,18 +255,30 @@ IGNORED         [ \t\v\f\r]
 
 	int val;
 	int ssf_ret;
+	unsigned long long int temp;
 	char msgbuf[512];
-	if(yyleng >= INT_MAX){
+	
 
+	sscanf(yytext, "%llu", &temp);
+	printf("%llu\n", temp);
 
-		sprintf(msgbuf, "Number (%s) is too large!\n", *yytext);
+	
+	
+	if(temp > INT_MAX){
+		sprintf(msgbuf, "Number (%d) is too large!\n", *yytext);
 		yyerror(lexer_filename(), msgbuf);
-
-
+		ssf_ret = sscanf(yytext, "%d", &val);
 
 	} else {
+
 		ssf_ret = sscanf(yytext, "%d", &val);
+
 	}
+
+		
+	
+	
+
 	
 
 	number2ast(val); 
@@ -371,7 +383,6 @@ void lexer_output()
 int main(int argc, char *argv[])
 {	
 	lexer_init(argv[1]); //Reads in the command line argument giving the file name.
-	
 	lexer_output();
 	
 	
