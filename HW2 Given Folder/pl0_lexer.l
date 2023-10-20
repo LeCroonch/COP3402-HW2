@@ -89,9 +89,9 @@ IGNORED         [ \t\v\f\r]
 
 {IGNORED}       { ; } /* do nothing */
 {COMMENT}       { ; } /* ignore comments */
-{EOL}			{ ; }
+{EOL}			{ ; } /* ignore EOL outside of the above states */
 
-"+" {
+"+" {					/*  Idendtifies token, and returns based on what token  */
 	tok2ast(plussym);
 	return plussym;
 }
@@ -249,9 +249,9 @@ IGNORED         [ \t\v\f\r]
 }
 
 
-{IDENT} 		{ ident2ast(yytext); return identsym; }
+{IDENT} 		{ ident2ast(yytext); return identsym; } //Identifies an identifer and returns token
 
-{NUMBER} { 
+{NUMBER} { //Identifies a number and checks if it is too large, if it is call error statement, then return token
 
 	int val;
 	int ssf_ret;
@@ -271,18 +271,12 @@ IGNORED         [ \t\v\f\r]
 
 	}
 
-		
-	
-	
-
-	
-
 	number2ast(val); 
 	return numbersym; 
 	
 }
 
-. {
+. { //Identifies everything else thats not already defined as invalid and calls error.
 	char msgbuf[512];
 	sprintf(msgbuf, "invalid character: '%c' ('\\0%o')", *yytext, *yytext);
     yyerror(lexer_filename(), msgbuf);
@@ -379,7 +373,7 @@ void lexer_output()
 int main(int argc, char *argv[])
 {	
 	lexer_init(argv[1]); //Reads in the command line argument giving the file name.
-	lexer_output();
+	lexer_output(); //Runs the output
 	
 	
 }
