@@ -75,7 +75,7 @@ IDENT		{LETTER}({LETTERORDIGIT}*)
 LETTER		[_a-zA-Z]
 NUMBER		{DIGIT}({DIGIT})
 DIGIT		[0-9]
-LETTERORDIGIT	({LETTER}|{DECDIGIT})
+LETTERORDIGIT	({LETTER}|{DIGIT})
 IGNORED         [ \t\v\f\r]
 NEWLINE         \n
 CR              \r
@@ -87,14 +87,19 @@ COMMENT         {COMMENTSTART}.*
 
 %%
 
-"var" {
-	tok2ast(varsym);
-	return varsym;
-}
+{IGNORED}       { ; } /* do nothing */
+{COMMENT}       { ; } /* ignore comments */
+{EOL}			{ ; }
+
 
 "const" {
 	tok2ast(constsym);
 	return constsym;
+}
+
+"var" {
+	tok2ast(varsym);
+	return varsym;
 }
 
 "procedure" {
@@ -142,29 +147,26 @@ COMMENT         {COMMENTSTART}.*
 	return dosym;
 }
 
-":=" {
-	tok2ast(becomessym);
-	return becomessym;
+"read" {
+	tok2ast(readsym);
+	return readsym;
 }
 
-";" {
-	tok2ast(semisym);
-	return semisym;
+"write" {
+	tok2ast(skipsym);
+	return writesym;
 }
 
-"," {
-	tok2ast(commasym);
-	return commasym;
+"skip" {
+	tok2ast(skipsym);
+	return skipsym;
+
 }
 
-"." {
-	tok2ast(periodsym);
-	return periodsym;
-}
+"odd" {
+	tok2ast(oddsym);
+	return oddsym;
 
-"<=" {
-	tok2ast(leqsym);
-	return leqsym;
 }
 
 "<>" {
@@ -177,14 +179,29 @@ COMMENT         {COMMENTSTART}.*
 	return ltsym;
 }
 
-">=" {
-	tok2ast(geqsym);
-	return geqsym;
+"<=" {
+	tok2ast(leqsym);
+	return leqsym;
 }
 
 ">" {
 	tok2ast(gtsym);
 	return gtsym;
+}
+
+">=" {
+	tok2ast(geqsym);
+	return geqsym;
+}
+
+"(" {
+	tok2ast(lparensym);
+	return lparensym;
+}
+
+")" {
+	tok2ast(rparensym);
+	return rparensym;
 }
 
 "+" {
@@ -207,11 +224,38 @@ COMMENT         {COMMENTSTART}.*
 	return divsym;
 }
 
+"." {
+	tok2ast(periodsym);
+	return periodsym;
+}
+
+";" {
+	tok2ast(semisym);
+	return semisym;
+}
+
 "=" {
 	tok2ast(eqsym);
 	return eqsym;
 }
 
+"," {
+	tok2ast(commasym);
+	return commasym;
+}
+
+":=" {
+	tok2ast(becomessym);
+	return becomessym;
+}
+
+{IDENT} 		{ ident2ast(yytext); return identsym; }
+{NUMBER} { 
+	int val;
+	if(yyleng >= INT_MAX )
+	number2ast(yytext); return numbersym; 
+	
+}
 
 %%
 
@@ -305,9 +349,11 @@ void lexer_output()
     } while (t != YYEOF);
 }
 
-int main()
-{
-	//lexer_output();
-	//lexer_print_output_header();
+int main(int argc, char *argv[])
+{	
+	lexer_init(argv[1]); //Reads in the command line argument giving the file name.
+	
+	lexer_output();
+	
 	
 }
