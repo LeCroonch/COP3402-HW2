@@ -71,17 +71,17 @@ static void number2ast(unsigned int val)
 %}
 
  /* you can add actual definitions below */
-IDENT		{LETTER}({LETTERORDIGIT}*)
-LETTER		[_a-zA-Z]
-NUMBER		{DIGIT}({DIGIT})
 DIGIT		[0-9]
+NUMBER		{DIGIT}({DIGIT}*)
+LETTER		[_a-zA-Z]
 LETTERORDIGIT	({LETTER}|{DIGIT})
-IGNORED         [ \t\v\f\r]
+IDENT		{LETTER}({LETTERORDIGIT}*)
 NEWLINE         \n
 CR              \r
 EOL             ({NEWLINE}|({CR}{NEWLINE}))
 COMMENTSTART    #
 COMMENT         {COMMENTSTART}.*
+IGNORED         [ \t\v\f\r]	
 
  /* the rules section starts after the %% below */
 
@@ -91,6 +91,50 @@ COMMENT         {COMMENTSTART}.*
 {COMMENT}       { ; } /* ignore comments */
 {EOL}			{ ; }
 
+"+" {
+	tok2ast(plussym);
+	return plussym;
+}
+
+"-" {
+	tok2ast(minussym);
+	return minussym;
+}
+
+"*" {
+	tok2ast(multsym);
+	return multsym;
+}
+
+"/" {
+	tok2ast(divsym);
+	return divsym;
+}
+
+"." {
+	tok2ast(periodsym);
+	return periodsym;
+}
+
+";" {
+	tok2ast(semisym);
+	return semisym;
+}
+
+"=" {
+	tok2ast(eqsym);
+	return eqsym;
+}
+
+"," {
+	tok2ast(commasym);
+	return commasym;
+}
+
+":=" {
+	tok2ast(becomessym);
+	return becomessym;
+}
 
 "const" {
 	tok2ast(constsym);
@@ -204,58 +248,23 @@ COMMENT         {COMMENTSTART}.*
 	return rparensym;
 }
 
-"+" {
-	tok2ast(plussym);
-	return plussym;
-}
-
-"-" {
-	tok2ast(minussym);
-	return minussym;
-}
-
-"*" {
-	tok2ast(multsym);
-	return multsym;
-}
-
-"/" {
-	tok2ast(divsym);
-	return divsym;
-}
-
-"." {
-	tok2ast(periodsym);
-	return periodsym;
-}
-
-";" {
-	tok2ast(semisym);
-	return semisym;
-}
-
-"=" {
-	tok2ast(eqsym);
-	return eqsym;
-}
-
-"," {
-	tok2ast(commasym);
-	return commasym;
-}
-
-":=" {
-	tok2ast(becomessym);
-	return becomessym;
-}
-
-{IDENT} 		{ ident2ast(yytext); return identsym; }
 {NUMBER} { 
+
 	int val;
-	if(yyleng >= INT_MAX )
-	number2ast(yytext); return numbersym; 
+	int ssf_ret;
+	if(yyleng >= INT_MAX){
+		bail_with_error("Number (%s) is too large!\n", yytext);
+	} else {
+		ssf_ret = sscanf(yytext, "%d", &val);
+	}
+	
+
+	number2ast(val); 
+	return numbersym; 
 	
 }
+{IDENT} 		{ ident2ast(yytext); return identsym; }
+
 
 %%
 
