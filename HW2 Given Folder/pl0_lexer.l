@@ -293,15 +293,21 @@ void lexer_output()
     AST dummy;
     yytoken_kind_t t;
     do {
-	t = (&dummy);
+	t = yylex(&dummy);
 	if (t == YYEOF) {
 	    break;
-        }
-        lexer_print_token(t, yylineno, yytext);
+	}
+        if (t != dosym) { /*took from error message, was supposed to be t != eolsym but its not defined switch dosym back to eolsym to see it, this is the function from the asm_lexer.c file on leavens website*/
+	    lexer_print_token(t, yylineno, yytext);
+        } else {
+	    lexer_print_token(t, yylineno, "\\n");
+	}
     } while (t != YYEOF);
 }
 
 int main()
 {
 	//lexer_output();
+	//lexer_print_output_header();
+	
 }
