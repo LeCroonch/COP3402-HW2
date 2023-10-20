@@ -255,8 +255,15 @@ IGNORED         [ \t\v\f\r]
 
 	int val;
 	int ssf_ret;
+	char msgbuf[512];
 	if(yyleng >= INT_MAX){
-		bail_with_error("Number (%s) is too large!\n", yytext);
+
+
+		sprintf(msgbuf, "Number (%s) is too large!\n", *yytext);
+		yyerror(lexer_filename(), msgbuf);
+
+
+
 	} else {
 		ssf_ret = sscanf(yytext, "%d", &val);
 	}
@@ -267,7 +274,11 @@ IGNORED         [ \t\v\f\r]
 	
 }
 
-
+. {
+	char msgbuf[512];
+	sprintf(msgbuf, "invalid character: '%c' ('\\0%o')", *yytext, *yytext);
+    yyerror(lexer_filename(), msgbuf);
+}
 
 %%
 
